@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Main Page | Ez10</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fc;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+header {
+  background-color: #007bff;
+  color: white;
+  width: 100%;
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+.container {
+  text-align: center;
+  margin-top: 40px;
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+}
+.dashboard button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s, background-color 0.3s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.dashboard button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+.logout-btn {
+  margin-top: 30px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.logout-btn:hover {
+  background-color: #b02a37;
+}
+</style>
+</head>
+<body>
+
+<header>Welcome to Ez10</header>
+
+<div class="container">
+  <h2>Hello, <span id="displayUsername"></span> 👋</h2>
+  <p>Select a section to continue:</p>
+
+  <div class="dashboard">
+    <button onclick="goTo('about')">📊 Performance</button>
+    <button onclick="goTo('assignments')">🧾 Assignments</button>
+    <button onclick="goTo('Game')">🎮 Game</button>
+    <button onclick="goTo('profile')">👤 Profile</button>
+  </div>
+
+  <button class="logout-btn" onclick="logout()">🚪 Log Out</button>
+</div>
+
+<script>
+// Verify login
+const currentUser = localStorage.getItem("loggedInUser");
+if (!currentUser) {
+  alert("You must log in first!");
+  window.location.href = "login.html";
+} else {
+  document.getElementById("displayUsername").textContent = currentUser;
+}
+
+function goTo(page) {
+  window.location.href = page + ".html";
+}
+
+function logout() {
+  // Only remove the current session
+  localStorage.removeItem("loggedInUser");
+  alert("You have logged out successfully!");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

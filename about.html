@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Performance | Ez10</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+  background-size: cover;
+  color: #222;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  backdrop-filter: blur(8px);
+}
+.container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  padding: 30px;
+  width: 90%;
+  max-width: 850px;
+  margin: 40px auto;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #007bff;
+  text-shadow: 0 0 4px rgba(255,255,255,0.8);
+}
+
+.stats-card {
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin: 20px 0;
+  text-align: left;
+  animation: fadeIn 0.5s ease;
+  position: relative;
+}
+
+.stats-card strong {
+  color: #007bff;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.3s;
+}
+.delete-btn:hover { background: #b02a37; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+button {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+button:hover { transform: scale(1.05); }
+
+#statsList {
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1><i class="fa-solid fa-chart-line"></i> Student Performance</h1>
+  <button onclick="window.location.href='main.html'"><i class="fa-solid fa-house"></i> Back to Dashboard</button>
+
+  <div id="statsList">
+    <p>Loading student performance data...</p>
+  </div>
+</div>
+
+<script>
+// Check login
+const currentUser = localStorage.getItem('loggedInUser');
+if (!currentUser) {
+  alert('You must log in first!');
+  window.location.href = 'login.html';
+}
+
+function loadAllStats() {
+  const listDiv = document.getElementById('statsList');
+  listDiv.innerHTML = '';
+
+  const allStats = JSON.parse(localStorage.getItem('studentStats') || '{}');
+  if (Object.keys(allStats).length === 0) {
+    listDiv.innerHTML = '<p>No performance data available.</p>';
+    return;
+  }
+
+  // Group by kit
+  const kits = {};
+  for (const username in allStats) {
+    const userStats = allStats[username];
+    userStats.forEach(stat => {
+      if (!kits[stat.kitCode]) kits[stat.kitCode] = [];
+      kits[stat.kitCode].push({
+        username: username,
+        score: stat.score,
+        correct: stat.correct,
+        total: stat.total,
+        date: stat.date
+      });
+    });
+  }
+
+  // Render
+  for (const kitCode in kits) {
+    const kitCard = document.createElement('div');
+    kitCard.className = 'stats-card';
+    kitCard.innerHTML = `
+      <strong>Kit:</strong> ${kitCode}
+      <button class="delete-btn" onclick="deleteKit('${kitCode}')"><i class="fa-solid fa-trash"></i> Delete Kit</button>
+      <br><br><strong>Submissions:</strong><br>
+    `;
+
+    kits[kitCode].forEach((s, i) => {
+      const percentage = ((s.correct / s.total) * 100).toFixed(1);
+      const date = new Date(s.date).toLocaleString();
+      kitCard.innerHTML += `${i + 1}. ${s.username} - Score: ${s.score} | Correct: ${s.correct}/${s.total} (${percentage}%) | Date: ${date}<br>`;
+    });
+
+    listDiv.appendChild(kitCard);
+  }
+}
+
+// 🗑️ Delete kit performance
+function deleteKit(kitCode) {
+  if (!confirm(`Are you sure you want to delete all performance data for kit ${kitCode}?`)) return;
+
+  const allStats = JSON.parse(localStorage.getItem('studentStats') || '{}');
+
+  // Remove all entries with that kit
+  for (const user in allStats) {
+    allStats[user] = allStats[user].filter(stat => stat.kitCode !== kitCode);
+    if (allStats[user].length === 0) delete allStats[user];
+  }
+
+  localStorage.setItem('studentStats', JSON.stringify(allStats));
+  alert(`Kit ${kitCode} data deleted successfully.`);
+  loadAllStats();
+}
+
+loadAllStats();
+</script>
+
+</body>
+</html>

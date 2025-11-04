@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Play Game | Ez10</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+  background-size: cover;
+  color: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+}
+.container {
+  position: relative;
+  z-index: 2;
+  background: rgba(255,255,255,0.85);
+  border-radius: 25px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  padding: 30px;
+  max-width: 700px;
+  width: 90%;
+  text-align: center;
+}
+h1 {
+  color: #007bff;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin: 10px 0;
+  font-size: 16px;
+}
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+button:hover { transform: scale(1.05); }
+
+.question-card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: left;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.choice {
+  background: #f1f5ff;
+  border-radius: 15px;
+  padding: 10px;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.choice:hover {
+  background: #cce0ff;
+}
+.correct {
+  background: #a0e7a0 !important;
+}
+.incorrect {
+  background: #ff9b9b !important;
+}
+.score-box {
+  font-size: 22px;
+  font-weight: 700;
+  color: #007bff;
+  margin-top: 20px;
+}
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.95);}
+  to {opacity: 1; transform: scale(1);}
+}
+</style>
+</head>
+<body>
+
+<div class="container fade-in" id="gameContainer">
+  <h1><i class="fa-solid fa-gamepad"></i> Ez10 Game</h1>
+
+  <div id="joinScreen">
+    <input id="kitCode" placeholder="Enter Kit Code">
+    <input id="playerName" placeholder="Enter Your Name">
+    <button onclick="startGame()">Start</button>
+  </div>
+
+  <div id="questionScreen" style="display:none;">
+    <h2 id="questionText"></h2>
+    <div id="choices"></div>
+  </div>
+
+  <div id="resultScreen" style="display:none;">
+    <h2>🎉 Great job, <span id="playerDisplay"></span>!</h2>
+    <p class="score-box">Your total score: <span id="finalScore">0</span> pts</p>
+    <button onclick="window.location.reload()">Play Again</button>
+  </div>
+</div>
+
+<script>
+let currentKit = null;
+let currentQuestion = 0;
+let score = 0;
+
+function startGame() {
+  const code = document.getElementById('kitCode').value.trim();
+  const name = document.getElementById('playerName').value.trim();
+  if(!code || !name){ alert('Please fill in all fields.'); return; }
+
+  const all = JSON.parse(localStorage.getItem('userKits') || '{}');
+  let kitFound = null;
+
+  // find the kit that matches the entered code and is active
+  for(let user in all){
+    const found = (all[user] || []).find(k => k.code === code && k.active);
+    if(found){ kitFound = found; break; }
+  }
+
+  if(!kitFound){ alert('Invalid or inactive kit code.'); return; }
+
+  currentKit = kitFound;
+  document.getElementById('joinScreen').style.display='none';
+  document.getElementById('questionScreen').style.display='block';
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = currentKit.questions[currentQuestion];
+  if(!q) return endGame();
+
+  document.getElementById('questionText').textContent = `Q${currentQuestion+1}: ${q.question}`;
+  const choiceDiv = document.getElementById('choices');
+  choiceDiv.innerHTML = '';
+
+  const colors = ['#ff7675','#74b9ff','#55efc4','#ffeaa7'];
+  q.choices.forEach((choice, i)=>{
+    const div = document.createElement('div');
+    div.className = 'choice fade-in';
+    div.style.background = colors[i];
+    div.textContent = `${String.fromCharCode(65+i)}) ${choice}`;
+    div.onclick = () => selectAnswer(String.fromCharCode(65+i), div);
+    choiceDiv.appendChild(div);
+  });
+}
+
+function selectAnswer(ans, div){
+  const q = currentKit.questions[currentQuestion];
+  if(ans === q.correct){
+    score += 10;
+    div.classList.add('correct');
+  } else {
+    div.classList.add('incorrect');
+  }
+
+  Array.from(document.getElementsByClassName('choice')).forEach(c => c.onclick=null);
+
+  setTimeout(()=>{
+    currentQuestion++;
+    showQuestion();
+  }, 800);
+}
+
+function endGame() {
+  // Hide question screen and show result screen
+  document.getElementById('questionScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('playerDisplay').textContent = document.getElementById('playerName').value;
+
+  // ✅ Use loggedInUser if available
+  const currentUser = localStorage.getItem('loggedInUser') || document.getElementById('playerName').value.trim();
+  const allStats = JSON.parse(localStorage.getItem('studentStats') || '{}');
+
+  const userStats = allStats[currentUser] || [];
+  userStats.push({
+    kitCode: currentKit.code,
+    score: score,
+    correct: score / 10,
+    total: currentKit.questions.length,
+    date: new Date().toISOString()
+  });
+
+  allStats[currentUser] = userStats;
+  localStorage.setItem('studentStats', JSON.stringify(allStats));
+}
+
+</script>
+</body>
+</html>

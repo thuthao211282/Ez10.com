@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fc;
+  margin: 0;
+}
+header {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+button {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+
+<header>👤 My Profile</header>
+
+<div class="container">
+  <label>Username:</label>
+  <input id="username" type="text" readonly>
+
+  <label>Email:</label>
+  <input id="email" type="email" placeholder="Enter your email">
+
+  <label>Password:</label>
+  <input id="password" type="password" placeholder="Enter new password">
+
+  <button onclick="saveProfile()">💾 Save Changes</button>
+  <button onclick="window.location.href='main.html'">⬅ Back to Dashboard</button>
+</div>
+
+<script>
+const currentUser = localStorage.getItem("loggedInUser");
+if (!currentUser) {
+  alert("You must log in first!");
+  window.location.href = "login.html";
+}
+
+function loadProfile() {
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  const userData = users[currentUser] || {};
+
+  document.getElementById("username").value = currentUser;
+  document.getElementById("email").value = userData.email || "";
+  document.getElementById("password").value = userData.password || "";
+}
+
+function saveProfile() {
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
+  if (!users[currentUser]) {
+    alert("Error: User not found.");
+    return;
+  }
+
+  users[currentUser].email = document.getElementById("email").value;
+  users[currentUser].password = document.getElementById("password").value;
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("✅ Profile updated successfully!");
+}
+
+loadProfile();
+</script>
+
+</body>
+</html>
