@@ -1,273 +1,453 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Create & Assign Kit | Ez10</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+
 <style>
+:root {
+  --primary: #4dabf7;
+  --danger: #ff4b5c;
+  --success: #28a745;
+  --choiceA: #ff4b5c;
+  --choiceB: #4dabf7;
+  --choiceC: #37d67a;
+  --choiceD: #f9ca24;
+}
+* { box-sizing: border-box; }
 body {
   font-family: 'Poppins', sans-serif;
-  margin:0; padding:0;
-  min-height:100vh;
-  display:flex; justify-content:center; align-items:center;
-  background: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
-  background-size: cover; color:#333;
-}
-body::before {
-  content:''; position:fixed; top:0; left:0; right:0; bottom:0; backdrop-filter: blur(8px);
-}
-.container {
-  backdrop-filter: blur(25px);
-  background: rgba(255,255,255,0.85);
-  border-radius:25px; box-shadow:0 8px 25px rgba(0,0,0,0.3);
-  width:90%; max-width:850px; padding:30px; color:#222; text-align:center; position:relative; z-index:1;
-}
-h1 { font-size:32px; margin-bottom:20px; color:#007bff; text-shadow:0 0 4px rgba(255,255,255,0.8);}
-button {border:none; border-radius:30px; padding:12px 26px; margin:6px; font-size:16px; font-weight:600; color:white; cursor:pointer; background:#007bff; transition:all 0.3s; }
-button:hover {transform:scale(1.05);}
-input, select {width:100%; padding:12px; margin:8px 0; border-radius:12px; border:1px solid #ccc; outline:none; background:rgba(255,255,255,0.9);}
-.question-card {background: rgba(255,255,255,0.85); border-radius:18px; padding:20px; margin:15px 0; text-align:left; position:relative; box-shadow:0 4px 15px rgba(0,0,0,0.15); transition:all 0.3s ease;}
-.delete-btn {position:absolute; top:15px; right:15px; background:#ff4b4b; color:white; border-radius:50%; width:35px; height:35px; border:none; cursor:pointer; display:flex; justify-content:center; align-items:center;}
-.delete-btn:hover {background:#ff1e1e;}
-.choice {margin:5px 0;}
-.choice span {font-weight:500;}
-#assignCode {margin-top:10px; font-size:22px; font-weight:bold; color:#007bff; transition: all 0.4s ease;}
-.fade-in {animation: fadeIn 0.5s ease forwards;}
-@keyframes fadeIn {from{opacity:0; transform:scale(0.9);} to{opacity:1; transform:scale(1);} }
-.status-badge {
-  display:inline-block;
-  padding:5px 12px;
-  border-radius:20px;
-  font-size:13px;
-  font-weight:600;
-  color:white;
-}
-.active {background:#28a745;}
-.inactive {background:#6c757d;}
-#assignCode {
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: all 0.4s ease;
-}
-#assignCode.fade-in {
-  opacity: 1;
-  transform: translateY(0);
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  overflow-x: hidden;
 }
 
+/* Background with classroom blur */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+  filter: blur(5px) brightness(0.65);
+  z-index: -1;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border-radius: 18px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  padding: 20px 30px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+h1, h3, label, strong {
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+header {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+h1 { font-size:24px;margin:0; }
+
+/* Transparent frosted buttons */
+button {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+}
+button:hover {
+  box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  transform: scale(1.04);
+}
+button i {
+  color: var(--primary);
+}
+button.warn {
+  border-color: rgba(255, 75, 92, 0.4);
+  color: #fff;
+}
+button.warn i {
+  color: var(--danger);
+}
+button.ghost {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.flex { display: flex; flex-wrap: wrap; gap: 20px; }
+.left, .right { flex: 1; min-width: 320px; }
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  padding: 16px;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+input, select, textarea {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 6px;
+  font-size: 15px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.choice-pill {
+  display: inline-block;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-right: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 0 8px rgba(255,255,255,0.2);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.choice-A { background: var(--choiceA); }
+.choice-B { background: var(--choiceB); }
+.choice-C { background: var(--choiceC); color:#111; }
+.choice-D { background: var(--choiceD); color:#111; }
+
+.kit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.small { font-size: 13px; opacity: 0.95; }
+
+.icon-only {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.06);
+}
+
+@media(max-width:768px){
+  header { flex-direction:column;align-items:flex-start;gap:8px }
+}
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1><i class="fa-solid fa-pen-to-square"></i> Create & Assign Kit</h1>
+  <header>
+    <div>
+      <h1><i class="fa-solid fa-pen-to-square"></i> Create & Assign Kit</h1>
+      <div class="small">Logged in as <strong id="currentUserDisplay"></strong></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button onclick="goDashboard()"><i class="fa-solid fa-house"></i> Dashboard</button>
+      <button onclick="reloadPage()"><i class="fa-solid fa-rotate-right"></i> Reload</button>
+      <button onclick="saveKit()"><i class="fa-solid fa-save"></i> Save</button>
+    </div>
+  </header>
 
-  <div>
-    <button onclick="window.location.href='main.html'"><i class="fa-solid fa-house"></i> Dashboard</button>
+  <div class="flex">
+    <!-- LEFT SIDE -->
+    <section class="left">
+      <div class="card">
+        <label for="kitTitle">Kit Title</label>
+        <input id="kitTitle" placeholder="Enter kit title...">
+
+        <div style="margin-top:10px;">
+          <button onclick="document.getElementById('fileInput').click()">
+            <i class="fa-solid fa-file-word"></i> Upload .docx
+          </button>
+          <input type="file" id="fileInput" accept=".docx" style="display:none;">
+        </div>
+
+        <div style="margin-top:10px;">
+          <button class="ghost" onclick="toggleManualInput()">
+            <i class="fa-solid fa-hand"></i> Add Question Manually
+          </button>
+          <div id="manualInput" style="display:none; margin-top:10px;">
+            <textarea id="manualQuestion" placeholder="Question text..."></textarea>
+            <input id="choiceA" placeholder="Choice A">
+            <input id="choiceB" placeholder="Choice B">
+            <input id="choiceC" placeholder="Choice C">
+            <input id="choiceD" placeholder="Choice D">
+            <select id="correctAnswer">
+              <option value="">Select correct answer</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button onclick="addManualQuestion()"><i class="fa-solid fa-plus"></i> Add Question</button>
+              <button class="ghost" onclick="clearManual()">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3><i class="fa-solid fa-eye"></i> Preview Questions</h3>
+        <div id="questions" class="small">No questions yet.</div>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE -->
+    <section class="right">
+      <div class="card">
+        <h3><i class="fa-solid fa-list"></i> My Kits</h3>
+        <div id="assignedKits" class="small">No kits yet.</div>
+      </div>
+    </section>
   </div>
-
-  <div>
-    <button onclick="document.getElementById('fileInput').click()"><i class="fa-solid fa-upload"></i> Upload Word</button>
-    <button onclick="toggleManualInput()"><i class="fa-solid fa-hand"></i> Add by Hand</button>
-    <input type="file" id="fileInput" accept=".docx" style="display:none;">
-  </div>
-
-  <div id="manualInput" style="display:none;">
-    <input id="manualQuestion" placeholder="Enter question...">
-    <input id="choiceA" placeholder="Choice A">
-    <input id="choiceB" placeholder="Choice B">
-    <input id="choiceC" placeholder="Choice C">
-    <input id="choiceD" placeholder="Choice D">
-    <select id="correctAnswer">
-      <option value="">Select Correct Answer</option>
-      <option value="A">A</option><option value="B">B</option>
-      <option value="C">C</option>
-      <option value="D">D</option>
-    </select>
-    <button onclick="addManualQuestion()"><i class="fa-solid fa-plus"></i> Add</button>
-  </div>
-
-  <div id="questions"></div>
-
-  <div>
-    <button onclick="saveKit()"><i class="fa-solid fa-save"></i> Save</button>
-  </div>
-  <div id="assignCode" class="fade-in"></div>
-
-  <h2>My Kits</h2>
-  <div id="assignedKits"></div>
-
 </div>
 
 <script>
-let currentUser = localStorage.getItem('loggedInUser');
-if(!currentUser){ alert('You must log in!'); window.location.href='login.html'; }
-let questions = [];
+/* ---------- JS Logic (same as your version) ---------- */
+const STORAGE_KEY_KITS = 'userKits_v4';
+const STORAGE_KEY_USER = 'loggedInUser';
+let currentUser = null;
+let workingQuestions = [];
+let editingQuestionIndex = null;
 
-// --- Word Upload ---
-document.getElementById('fileInput').addEventListener('change', async e=>{
-  const file = e.target.files[0]; if(!file) return;
-  try{
-    const buffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({arrayBuffer:buffer});
-    parseQuestions(result.value);
-  } catch { alert('Error reading Word file'); }
-});
+function $(id){ return document.getElementById(id); }
+function safeParse(s, fallback){ try{ return JSON.parse(s); }catch(e){return fallback;} }
 
-function parseQuestions(text){
-  const lines = text.split('\n').map(x=>x.trim()).filter(x=>x);
-  questions=[]; let q=null;
-  lines.forEach(line=>{
-    if(/^Q\d*/i.test(line)){
-      if(q) questions.push(q);
-      q={question:line.replace(/^Q\d*[:.\-\s]*/i,''), choices:[]};
-    } else if(/^[A-D][\.\)]/.test(line)){
-      q?.choices.push(line.replace(/^[A-D][\.\)]\s*/,'')); 
-    } else if(/^Answer[:\-]?\s*[A-D]/i.test(line)){
-      q.correct=line.match(/[A-D]/i)[0].toUpperCase();
-    }
-  });
-  if(q) questions.push(q);
-  renderQuestions();
+function ensureUser(){
+  currentUser = localStorage.getItem(STORAGE_KEY_USER);
+  if(!currentUser){
+    const name = prompt('No logged-in user found. Enter username to continue (saved locally):');
+    if(!name){ alert('A username is required.'); throw new Error('No user'); }
+    currentUser = name.trim();
+    localStorage.setItem(STORAGE_KEY_USER, currentUser);
+  }
+  $('currentUserDisplay').textContent = currentUser;
 }
+ensureUser();
 
-function toggleManualInput(){
-  const block=document.getElementById('manualInput');
-  block.style.display = block.style.display==='none'?'block':'none';
-}
+function toggleManualInput(){ const el = $('manualInput'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; }
+function clearManual(){ ['manualQuestion','choiceA','choiceB','choiceC','choiceD'].forEach(id=>$(id).value=''); $('correctAnswer').value=''; editingQuestionIndex = null; }
 
 function addManualQuestion(){
-  const q=document.getElementById('manualQuestion').value.trim();
-  const a=document.getElementById('choiceA').value.trim();
-  const b=document.getElementById('choiceB').value.trim();
-  const c=document.getElementById('choiceC').value.trim();
-  const d=document.getElementById('choiceD').value.trim();
-  const correct=document.getElementById('correctAnswer').value;
-  if(!q||!a||!b||!c||!d||!correct){ alert('Fill all fields'); return; }
-  questions.push({question:q,choices:[a,b,c,d],correct});
+  const q = $('manualQuestion').value.trim();
+  const a = $('choiceA').value.trim();
+  const b = $('choiceB').value.trim();
+  const c = $('choiceC').value.trim();
+  const d = $('choiceD').value.trim();
+  const correct = $('correctAnswer').value;
+  if(!q || !a || !b || !c || !d || !correct){ alert('Please complete all fields.'); return; }
+
+  const item = { question: q, choices: [a,b,c,d], correct };
+  if(editingQuestionIndex !== null){
+    workingQuestions[editingQuestionIndex] = item;
+    editingQuestionIndex = null;
+  } else {
+    workingQuestions.push(item);
+  }
+  clearManual();
   renderQuestions();
-  ['manualQuestion','choiceA','choiceB','choiceC','choiceD'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('correctAnswer').value='';
 }
 
 function renderQuestions(){
-  const qDiv=document.getElementById('questions');
-  qDiv.innerHTML='';
-  questions.forEach((q,i)=>{
-    const card=document.createElement('div'); card.className='question-card fade-in';
-    card.innerHTML=`
-      <button class="delete-btn" onclick="deleteQuestion(${i})"><i class="fa-solid fa-trash"></i></button>
-      <strong>Q${i+1}:</strong> ${q.question} <br>
-      <div class="choice"><span>A)</span> ${q.choices[0]}</div>
-      <div class="choice"><span>B)</span> ${q.choices[1]}</div>
-      <div class="choice"><span>C)</span> ${q.choices[2]}</div>
-      <div class="choice"><span>D)</span> ${q.choices[3]}</div>
-      <strong>Answer:</strong> ${q.correct}
+  const container = $('questions');
+  container.innerHTML = '';
+  if(!workingQuestions.length){ container.textContent = 'No questions yet.'; return; }
+
+  workingQuestions.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    const correctClass = q.correct === 'A' ? 'choice-A' : q.correct === 'B' ? 'choice-B' : q.correct === 'C' ? 'choice-C' : 'choice-D';
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div style="max-width:78%">
+          <div style="font-weight:800">Q${i+1}. ${escapeHtml(q.question)}</div>
+          <div style="margin-top:8px">
+            <div><span class="choice-pill choice-A">A</span> ${escapeHtml(q.choices[0]||'')}</div>
+            <div><span class="choice-pill choice-B">B</span> ${escapeHtml(q.choices[1]||'')}</div>
+            <div><span class="choice-pill choice-C">C</span> ${escapeHtml(q.choices[2]||'')}</div>
+            <div><span class="choice-pill choice-D">D</span> ${escapeHtml(q.choices[3]||'')}</div>
+          </div>
+          <div style="margin-top:8px;font-size:13px"><strong>Answer:</strong> <span class="${correctClass} small" style="padding:6px 8px;border-radius:8px">${q.correct}</span></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="ghost" title="Edit" onclick="editQuestion(${i})"><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="warn" title="Delete" onclick="deleteQuestion(${i})"><i class="fa-solid fa-trash"></i> Delete</button>
+        </div>
+      </div>
     `;
-    qDiv.appendChild(card);
+    container.appendChild(div);
   });
 }
 
-function deleteQuestion(i){ 
-  if(confirm('Delete this question?')){ 
-    questions.splice(i,1); renderQuestions(); 
-  } 
+function editQuestion(index){
+  const q = workingQuestions[index];
+  if(!q) return;
+  $('manualQuestion').value = q.question || '';
+  $('choiceA').value = q.choices[0] || '';
+  $('choiceB').value = q.choices[1] || '';
+  $('choiceC').value = q.choices[2] || '';
+  $('choiceD').value = q.choices[3] || '';
+  $('correctAnswer').value = q.correct || '';
+  editingQuestionIndex = index;
+  $('manualInput').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-
-// --- Save Kit ---
-function saveKit(){
-  if(questions.length===0){ alert('Add questions first'); return; }
-  let all = JSON.parse(localStorage.getItem('userKits')||'{}');
-  if(!all[currentUser]) all[currentUser]=[];
-  all[currentUser].push({questions:[...questions], code:null, active:false});
-  localStorage.setItem('userKits', JSON.stringify(all));
-  alert('Kit saved successfully!');
-  questions=[]; renderQuestions();
-  loadAssignedKits();
-}
-
-// --- Assign & Unassign Kit ---
-function toggleAssign(code) {
-  let all = JSON.parse(localStorage.getItem('userKits') || '{}');
-  const kits = all[currentUser] || [];
-
-  // Find kit by code, or pick first unassigned if no code yet
-  let kit = kits.find(k => k.code === code);
-  if (!kit && (!code || code === '')) {
-    kit = kits.find(k => !k.code);
-  }
-
-  if (!kit) {
-    alert('Kit not found!');
-    return;
-  }
-
-  if (!kit.active) { // Assign
-    const newCode = 'KIT' + Math.floor(10000 + Math.random() * 90000);
-    kit.code = newCode;
-    kit.active = true;
-    const codeDiv = document.getElementById('assignCode');
-    codeDiv.textContent = '🎯 Kit Code: ' + newCode;
-    codeDiv.classList.remove('fade-in'); // reset animation
-    void codeDiv.offsetWidth; // trigger reflow
-    codeDiv.classList.add('fade-in');
-  } else { // Unassign
-    kit.active = false;
-    const codeDiv = document.getElementById('assignCode');
-    codeDiv.textContent = 'Kit ' + kit.code + ' unassigned.';
-    codeDiv.classList.remove('fade-in');
-    void codeDiv.offsetWidth;
-    codeDiv.classList.add('fade-in');
-  }
-
-  all[currentUser] = kits;
-  localStorage.setItem('userKits', JSON.stringify(all));
-  loadAssignedKits();
-}
-
-
-// --- Delete Kit ---
-function deleteKit(code){
-  if(!confirm('Are you sure you want to delete this kit permanently?')) return;
-  let all = JSON.parse(localStorage.getItem('userKits')||'{}');
-  if(!all[currentUser]) return;
-  all[currentUser] = all[currentUser].filter(k => k.code !== code && !(k.code===null && !code));
-  localStorage.setItem('userKits', JSON.stringify(all));
-  loadAssignedKits();
-}
-
-// --- Load Kits ---
-function loadAssignedKits(){
-  const div=document.getElementById('assignedKits'); 
-  div.innerHTML='';
-  let all = JSON.parse(localStorage.getItem('userKits')||'{}');
-  if(!all[currentUser]) return;
-  all[currentUser].forEach(k=>{
-    const card=document.createElement('div'); card.className='question-card fade-in';
-    card.innerHTML=`
-      <strong>Code:</strong> ${k.code||'Not assigned'} <br>
-      <span class="status-badge ${k.active?'active':'inactive'}">${k.active?'Active':'Inactive'}</span><br><br>
-      <button style="background:${k.active?'#6c757d':'#28a745'}" onclick="toggleAssign('${k.code||''}')">
-        ${k.active?'Unassign':'Assign'}
-      </button>
-      <button onclick="editKit('${k.code||''}')"><i class="fa-solid fa-pen"></i> Edit</button>
-      <button style="background:#dc3545" onclick="deleteKit('${k.code||''}')"><i class="fa-solid fa-trash"></i> Delete</button>
-    `;
-    div.appendChild(card);
-  });
-}
-
-// --- Edit Kit ---
-function editKit(code){
-  let all = JSON.parse(localStorage.getItem('userKits')||'{}');
-  const kit = (all[currentUser]||[]).find(k=>k.code===code || !k.code);
-  if(!kit){ alert('Kit not found'); return; }
-  questions=[...kit.questions];
+function deleteQuestion(index){
+  if(!confirm('Delete this question?')) return;
+  workingQuestions.splice(index,1);
   renderQuestions();
 }
 
+function loadAllKits(){ return safeParse(localStorage.getItem(STORAGE_KEY_KITS), {}); }
+function saveAllKits(all){ localStorage.setItem(STORAGE_KEY_KITS, JSON.stringify(all)); }
+
+function saveKit(){
+  if(!workingQuestions.length){ alert('Add at least one question before saving a kit.'); return; }
+  const title = $('kitTitle').value.trim() || 'Untitled Kit';
+  const all = loadAllKits();
+  if(!all[currentUser]) all[currentUser] = [];
+  const kit = { kitId: Date.now().toString(), title, questions: JSON.parse(JSON.stringify(workingQuestions)), code: null, active: false, createdAt: new Date().toISOString() };
+  all[currentUser].push(kit);
+  saveAllKits(all);
+  workingQuestions = [];
+  $('kitTitle').value = '';
+  renderQuestions();
+  loadAssignedKits();
+  setTimeout(()=> alert('Kit saved!'), 50);
+}
+
+function loadAssignedKits(){
+  const out = $('assignedKits'); out.innerHTML = '';
+  const all = loadAllKits();
+  const kits = all[currentUser] || [];
+  if(!kits.length){ out.textContent = 'No kits yet.'; return; }
+  kits.slice().reverse().forEach(k=>{
+    const row = document.createElement('div'); row.className = 'kit-row';
+    row.innerHTML = `
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(90deg,var(--primary),#4facfe);display:flex;align-items:center;justify-content:center;font-weight:800">${escapeHtml((k.title||'K')[0].toUpperCase())}</div>
+        <div>
+          <div class="kit-title" style="font-weight:800">${escapeHtml(k.title||'Untitled')}</div>
+          <div class="small">${(k.questions || []).length} question(s) ${k.code ? '• Code: ' + escapeHtml(k.code) : ''}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button title="Assign / Generate Code" onclick="toggleAssign('${k.kitId}')"><i class="fa-solid fa-link"></i> ${k.active ? 'Unassign' : 'Assign'}</button>
+        <button title="Edit kit" class="ghost" onclick="loadKitToEditor('${k.kitId}')"><i class="fa-solid fa-pen"></i></button>
+        <button title="Export kit" class="ghost" onclick="exportKit('${k.kitId}')"><i class="fa-solid fa-file-export"></i></button>
+        <button title="Delete kit" class="warn" onclick="deleteKit('${k.kitId}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    `;
+    out.appendChild(row);
+  });
+}
+
+function generateCode(existing){
+  let tries=0;
+  while(tries < 200){
+    const c = 'EZ' + Math.floor(1000 + Math.random()*9000);
+    if(!existing.includes(c)) return c;
+    tries++;
+  }
+  return 'EZ' + Math.floor(Math.random()*900000);
+}
+
+function toggleAssign(kitId){
+  const all = loadAllKits();
+  const kits = all[currentUser] || [];
+  const kit = kits.find(k => k.kitId === kitId);
+  if(!kit){ alert('Kit not found'); return; }
+
+  if(!kit.active){
+    const allKits = Object.values(all).flat();
+    const used = allKits.map(x => x.code).filter(Boolean);
+    kit.code = generateCode(used);
+    kit.active = true;
+    kit.assignedAt = new Date().toISOString();
+    alert('Assigned code: ' + kit.code);
+  } else {
+    kit.active = false;
+    kit.unassignedAt = new Date().toISOString();
+    alert('Kit unassigned: ' + (kit.code || 'n/a'));
+  }
+  kit.updatedAt = new Date().toISOString();
+  saveAllKits(all);
+  loadAssignedKits();
+}
+
+function loadKitToEditor(kitId){
+  const all = loadAllKits();
+  const kit = (all[currentUser] || []).find(k => k.kitId === kitId);
+  if(!kit) return alert('Kit not found');
+  $('kitTitle').value = kit.title || '';
+  workingQuestions = JSON.parse(JSON.stringify(kit.questions || []));
+  renderQuestions();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function exportKit(kitId){
+  const all = loadAllKits();
+  const kit = (all[currentUser] || []).find(k => k.kitId === kitId);
+  if(!kit){ alert('Kit not found'); return; }
+  const data = JSON.stringify(kit, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${kit.title || 'kit'}.json`;
+  a.click();
+}
+
+function deleteKit(kitId){
+  if(!confirm('Delete this kit permanently?')) return;
+  const all = loadAllKits();
+  all[currentUser] = (all[currentUser] || []).filter(k => k.kitId !== kitId);
+  saveAllKits(all);
+  loadAssignedKits();
+}
+
+function goDashboard(){ window.location.href = 'dashboard.html'; }
+function reloadPage(){ location.reload(); }
+function escapeHtml(str){ return str ? str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) : ''; }
+
 loadAssignedKits();
 </script>
-
 </body>
 </html>
